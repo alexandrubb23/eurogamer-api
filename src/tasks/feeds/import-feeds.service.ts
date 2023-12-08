@@ -1,25 +1,14 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
-import { ImportFeedsNewsService } from 'src/services/feeds/import-feeds-news.service';
-import { ImportFeedsVideosService } from 'src/services/feeds/import-feeds-videos.service';
+import { ImportService } from 'src/services/import/import.service';
 
 @Injectable()
-export class ImportFeedsTasksService {
-  private readonly logger = new Logger(ImportFeedsTasksService.name);
-
-  constructor(
-    private readonly importNewFeedsService: ImportFeedsNewsService,
-    private readonly importVideosFeedsService: ImportFeedsVideosService,
-  ) {}
+export class ImportTasksService {
+  constructor(private readonly importService: ImportService) {}
 
   @Cron(CronExpression.EVERY_10_SECONDS)
-  handleImportNewsFeeds() {
-    this.importNewFeedsService.importFeeds();
-  }
-
-  @Cron(CronExpression.EVERY_30_SECONDS)
-  handleImportVideosFeeds() {
-    this.importVideosFeedsService.importFeeds();
+  handleImport() {
+    this.importService.import();
   }
 }

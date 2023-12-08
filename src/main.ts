@@ -5,10 +5,10 @@ import env from './common/utils/env.helper';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const EUROGAMER_API_PORT = env.int('EUROGAMER_API_PORT');
+  const EUROGAMER_APP_PORT = env.int('EUROGAMER_APP_PORT');
 
-  await app.listen(EUROGAMER_API_PORT, () => {
-    console.log(`App listening on port ${EUROGAMER_API_PORT}`);
+  await app.listen(EUROGAMER_APP_PORT, () => {
+    console.log(`App listening on port ${EUROGAMER_APP_PORT}`);
   });
 }
 
