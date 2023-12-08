@@ -1,0 +1,52 @@
+version: '3.9'
+
+networks:
+  web-network:
+    driver: 'bridge'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    environment:
+      - DATABASE_HOST=host.docker.internal
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - .env
+    command: npm run start:dev
+    ports:
+      - ${EUROGAMER_APP_PORT}:${EUROGAMER_APP_PORT}
+    depends_on:
+      - db
+    networks:
+      - web-network
+  db:
+    image: mysql:8
+    container_name: eurogamer-db
+    restart: unless-stopped
+    command: --default-authentication-plugin=caching_sha2_password
+    ports:
+      - ${EUROGAMER_DATABASE_PORT}:${EUROGAMER_DATABASE_PORT}
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: $EUROGAMER_DATABASE_PASSWORD
+      MYSQL_DATABASE: $EUROGAMER_DATABASE_NAME
+      MYSQL_USER: $EUROGAMER_DATABASE_USER
+      MYSQL_PASSWORD: $EUROGAMER_DATABASE_PASSWORD
+    env_file: ./.env
+    networks:
+      - web-network
+  test-db:
+    image: mysql:8
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: $EUROGAMER_DATABASE_PASSWORD
+    profiles:
+      - test
