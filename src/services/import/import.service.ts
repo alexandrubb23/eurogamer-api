@@ -33,9 +33,6 @@ export class ImportService {
     private readonly configService: ConfigService<ConfigSchemaType>,
   ) {}
 
-  // Iterating over DOMAINS_CONFIG to import items for each domain
-  // demonstrates a scalable approach. As new domains are added to
-  // DOMAINS_CONFIG, the import method will automatically support them.
   public async import() {
     const importDomains: Promise<void>[] = Object.entries(DOMAINS_CONFIG).map(
       ([domain]) =>
@@ -57,14 +54,7 @@ export class ImportService {
     });
   }
 
-  // This method handles the flow of importing items
-  // for a specific domain. It correctly separates
-  // the steps of fetching items and then importing them via a domain-specific service.
   private async importByDomain(domain: Domain) {
-    // The service separates concerns nicely by delegating
-    // the domain-specific importing logic to individual domain
-    // services and using a repository pattern for database interaction.
-    // This makes the code more maintainable.
     const serviceDomain = this.factoryDomainService(domain);
 
     const items = await this.getItemsByDomain(domain);
@@ -72,14 +62,10 @@ export class ImportService {
     serviceDomain.importData(items);
   }
 
-  // A clear and concise method for fetching repositories.
-  // It abstracts away the details of interacting with the dataSource.
   private getRepository(target: EntityClassOrSchema) {
     return this.dataSource.getRepository(target);
   }
 
-  // This method effectively fetches items from an external s
-  // ource (API) and is flexible to support multiple domains.
   private async getItemsByDomain(domain: Domain) {
     const apiClient = this.apiClient[domain];
     const { rss } = await apiClient.getAll();
@@ -87,18 +73,20 @@ export class ImportService {
     return rss.channel.item;
   }
 
-  // Dynamically instantiating domain services based on configuration is a powerful pattern.
-  // It allows for easy extension if new domains are added to your application.
   private factoryDomainService(domain: Domain) {
     const { entity, service } = DOMAINS_CONFIG[domain];
 
     const repositoryDomain = this.getRepository(entity);
-    const serviceDomain = new service(
-      repositoryDomain,
-      this.apiClient[domain],
-      this.configService,
-    );
+    const serviceDomain = new service(this, repositoryDomain);
 
     return serviceDomain;
+  }
+
+  public get getApiClient() {
+    return this.apiClient;
+  }
+
+  public get getConfigService() {
+    return this.configService;
   }
 }

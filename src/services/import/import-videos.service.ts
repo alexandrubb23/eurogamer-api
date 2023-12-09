@@ -1,6 +1,6 @@
-import { Repository } from 'typeorm';
 import * as cheerio from 'cheerio';
 import * as crypto from 'crypto';
+import { Repository } from 'typeorm';
 
 import {
   ConflictException,
@@ -8,21 +8,17 @@ import {
   Logger,
   NotAcceptableException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { ConfigSchemaType } from 'src/common/validators/config.validator';
-import { Video } from 'src/domains/videos/domain/entities/video.entity';
-import { RSSAPIClient } from '../api-client.service';
-import { Item, ItemResponse } from './import.service';
 import { limitConcurrentRequests } from 'src/common/utils/limit-concurrent-requests.utils';
+import { Video } from 'src/domains/videos/domain/entities/video.entity';
+import { ImportService, Item, ItemResponse } from './import.service';
 
 export class ImportVideosService {
   private static LIMIT_CONCURRENT_REQUESTS = 5;
   private readonly logger = new Logger(ImportVideosService.name);
 
   constructor(
+    private readonly importService: ImportService,
     private readonly videosRepository: Repository<Video>,
-    private readonly videosAPIClient: RSSAPIClient<ItemResponse>,
-    private readonly configService: ConfigService<ConfigSchemaType>,
   ) {}
 
   public findVideoByLink(link: string) {
@@ -58,7 +54,7 @@ export class ImportVideosService {
     const existingVideo = await this.findVideoByLink(video.link);
 
     try {
-      const htmlPageSource = await this.videosAPIClient.getOne(itemPath);
+      const htmlPageSource = await this.getVideoApiClient.getOne(itemPath);
 
       if (existingVideo)
         throw new ConflictException(
@@ -161,5 +157,13 @@ export class ImportVideosService {
   private getItemPath(video: ItemResponse) {
     const apiEndpoint = this.configService.get<string>('EUROGAMER_URL');
     return video.link.replace(apiEndpoint, '');
+  }
+
+  private get configService() {
+    return this.importService.getConfigService;
+  }
+
+  private get getVideoApiClient() {
+    return this.importService.getApiClient.videos;
   }
 }

@@ -1,14 +1,12 @@
-import * as crypto from 'crypto';
 import { Repository } from 'typeorm';
 
 import { Article } from 'src/domains/news/domain/entities/article.entity';
-import { RSSAPIClient } from '../api-client.service';
-import { ItemResponse } from './import.service';
+import { ImportService, ItemResponse } from './import.service';
 
 export class ImportNewsService {
   constructor(
-    private readonly articlesRepository: Repository<Article>,
-    private readonly newsAPIClient: RSSAPIClient<ItemResponse>,
+    private readonly importService: ImportService,
+    private readonly newsRepository: Repository<Article>,
   ) {}
 
   public async importData(items: ItemResponse[]) {
