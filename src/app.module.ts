@@ -13,6 +13,7 @@ import validateEnvironmentVariables from './common/validators/config.validator';
   imports: [
     ConfigModule.forRoot({
       validate: validateEnvironmentVariables,
+      isGlobal: true,
     }),
     ScheduleModule.forRoot(),
     ImportFeedsModule,

@@ -1,22 +1,165 @@
 import { Repository } from 'typeorm';
+import * as cheerio from 'cheerio';
 import * as crypto from 'crypto';
 
+import {
+  ConflictException,
+  HttpStatus,
+  Logger,
+  NotAcceptableException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { ConfigSchemaType } from 'src/common/validators/config.validator';
 import { Video } from 'src/domains/videos/domain/entities/video.entity';
-import { Item } from './import.service';
+import { RSSAPIClient } from '../api-client.service';
+import { Item, ItemResponse } from './import.service';
+import { limitConcurrentRequests } from 'src/common/utils/limit-concurrent-requests.utils';
 
 export class ImportVideosService {
-  constructor(private readonly videosRepository: Repository<Video>) {}
+  private static LIMIT_CONCURRENT_REQUESTS = 5;
+  private readonly logger = new Logger(ImportVideosService.name);
 
-  public async importItems(items: Item[]) {
-    items.forEach((item) => {
-      this.videosRepository.save({
-        uuid: crypto.randomUUID(),
-        title: item.title,
-        description: item.description,
-        thumbnail: item.link,
-        link: item.link,
-        publishDate: item.pubDate,
-      });
+  constructor(
+    private readonly videosRepository: Repository<Video>,
+    private readonly videosAPIClient: RSSAPIClient<ItemResponse>,
+    private readonly configService: ConfigService<ConfigSchemaType>,
+  ) {}
+
+  public findVideoByLink(link: string) {
+    return this.videosRepository.findOne({
+      where: {
+        link,
+      },
     });
+  }
+
+  public async importData(videos: ItemResponse[]) {
+    const importVideos = videos.map((video) => () => this.importVideo(video));
+    const importedVideos = await limitConcurrentRequests(
+      ImportVideosService.LIMIT_CONCURRENT_REQUESTS,
+      importVideos,
+    );
+
+    importedVideos.forEach((importedVideo, index) => {
+      const videoLink = videos[index].link;
+      if (importedVideo.status === 'fulfilled') {
+        this.logger.debug(`Imported video: ${videoLink}`);
+      } else {
+        this.logger.error(
+          `Error importing video: ${videoLink}`,
+          importedVideo.reason,
+        );
+      }
+    });
+  }
+
+  private async importVideo(video: ItemResponse) {
+    const itemPath = this.getItemPath(video);
+    const existingVideo = await this.findVideoByLink(video.link);
+
+    try {
+      const htmlPageSource = await this.videosAPIClient.getOne(itemPath);
+
+      if (existingVideo)
+        throw new ConflictException(
+          `Video with link: ${video.link} already exists`,
+        );
+
+      const cheer = cheerio.load(htmlPageSource);
+      const newVideo = this.parseSourcePageWithCheerio(cheer, video);
+
+      const savedVideo = await this.saveVideo(newVideo);
+
+      return savedVideo;
+    } catch (error) {
+      const { NOT_FOUND, CONFLICT } = HttpStatus;
+      if (error.status === NOT_FOUND) await this.deleteVideo(existingVideo);
+      if (error.status === CONFLICT)
+        await this.updateVideo(existingVideo, video);
+
+      return Promise.reject(error);
+    }
+  }
+
+  private saveVideo(video: Item): Promise<Item> {
+    const { title, description, thumbnail, publishDate, link } = video;
+
+    const newVideo = {
+      description,
+      link,
+      publishDate,
+      thumbnail,
+      title,
+      uuid: crypto.randomUUID(),
+    };
+
+    return this.videosRepository.save(newVideo);
+  }
+
+  private deleteVideo(existingVideo: Video) {
+    const { uuid } = existingVideo;
+    try {
+      this.logger.debug(`Deleted video: ${uuid}`);
+      return this.videosRepository.delete({ uuid });
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  private async updateVideo(existingVideo: Video, newVideo: ItemResponse) {
+    if (
+      existingVideo.title === newVideo.title &&
+      existingVideo.description === newVideo.description
+    ) {
+      this.logger.debug(`Video already up to date: ${existingVideo.uuid}`);
+      return;
+    }
+
+    const { uuid } = existingVideo;
+
+    try {
+      this.logger.debug(`Updated video: ${uuid}`);
+
+      const { title, description } = newVideo;
+
+      return this.videosRepository.update(uuid, {
+        ...existingVideo,
+        title,
+        description,
+      });
+    } catch (error) {
+      // this.logger.error(`Error updating video: ${uuid}`, error);
+      return Promise.reject(error);
+    }
+  }
+
+  private parseSourcePageWithCheerio(
+    cheerio: cheerio.CheerioAPI,
+    video: ItemResponse,
+  ): Item {
+    const title = cheerio('h1.title').text();
+    if (!title) throw new NotAcceptableException('Title not found');
+
+    const description = cheerio('.article_body_content').find('p').text();
+    if (!description) throw new NotAcceptableException('Description not found');
+
+    const thumbnail = cheerio('img.headline_image').attr('src') ?? 'none';
+
+    const publishAt =
+      cheerio('.published_at').text() ?? cheerio('.updated_at').text();
+    const publishDate = publishAt ? publishAt : cheerio('.updated_at').text();
+
+    return {
+      description,
+      link: video.link,
+      publishDate,
+      thumbnail,
+      title,
+    };
+  }
+
+  private getItemPath(video: ItemResponse) {
+    const apiEndpoint = this.configService.get<string>('EUROGAMER_URL');
+    return video.link.replace(apiEndpoint, '');
   }
 }

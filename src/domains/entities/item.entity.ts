@@ -9,7 +9,7 @@ export class Item {
   title: string;
 
   @Column({
-    length: 3000,
+    type: 'longtext',
   })
   description: string;
 

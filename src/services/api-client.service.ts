@@ -37,6 +37,14 @@ export class RSSAPIClient<T> {
     return xmlParser.parse(xmlData);
   };
 
+  public getOne = async (id: string): Promise<string> => {
+    const response = await this.firstValueFromSource(
+      this.httpService.get<string>(id),
+    );
+
+    return response.data;
+  };
+
   private firstValueFromSource = <T>(source: Observable<T>) => {
     return firstValueFrom(source.pipe(catchError(this.handleError)));
   };

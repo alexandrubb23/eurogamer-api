@@ -3,25 +3,34 @@ import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-clas
 import { keys } from 'lodash/fp';
 import { DataSource } from 'typeorm';
 
-import { Domain, DomainAPIClient } from './models/domains.types';
-import { DOMAINS_CONFIG } from './constants/domains.constants';
 import { HTTP_API_CLIENT } from 'src/common/providers/http-api-client.provider';
+import { DOMAINS_CONFIG } from './constants/domains.constants';
+import { Domain, DomainAPIClient } from './models/domains.types';
+import { ConfigService } from '@nestjs/config';
+import { ConfigSchemaType } from 'src/common/validators/config.validator';
+
+export type ItemResponse = {
+  description: string;
+  guid: string;
+  link: string;
+  pubDate: string;
+  title: string;
+};
 
 export type Item = {
   title: string;
-  link: string;
-  'dc:creator': string;
-  pubDate: string;
-  guid: string;
-  'media:content': string;
   description: string;
+  thumbnail: string;
+  link: string;
+  publishDate: string;
 };
 
 export class ImportService {
   constructor(
     @Inject(HTTP_API_CLIENT)
-    private readonly apiClient: DomainAPIClient<Item>,
+    private readonly apiClient: DomainAPIClient<ItemResponse>,
     private readonly dataSource: DataSource,
+    private readonly configService: ConfigService<ConfigSchemaType>,
   ) {}
 
   // Iterating over DOMAINS_CONFIG to import items for each domain
@@ -56,11 +65,11 @@ export class ImportService {
     // the domain-specific importing logic to individual domain
     // services and using a repository pattern for database interaction.
     // This makes the code more maintainable.
-    const serviceDomain = this.instantiateDomainService(domain);
+    const serviceDomain = this.factoryDomainService(domain);
 
     const items = await this.getItemsByDomain(domain);
 
-    serviceDomain.importItems(items);
+    serviceDomain.importData(items);
   }
 
   // A clear and concise method for fetching repositories.
@@ -80,11 +89,15 @@ export class ImportService {
 
   // Dynamically instantiating domain services based on configuration is a powerful pattern.
   // It allows for easy extension if new domains are added to your application.
-  private instantiateDomainService(domain: Domain) {
+  private factoryDomainService(domain: Domain) {
     const { entity, service } = DOMAINS_CONFIG[domain];
 
     const repositoryDomain = this.getRepository(entity);
-    const serviceDomain = new service(repositoryDomain);
+    const serviceDomain = new service(
+      repositoryDomain,
+      this.apiClient[domain],
+      this.configService,
+    );
 
     return serviceDomain;
   }

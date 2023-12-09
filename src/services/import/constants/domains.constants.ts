@@ -6,12 +6,12 @@ import { Video } from 'src/domains/videos/domain/entities/video.entity';
 
 export const DOMAINS_CONFIG: DomainConfig = {
   videos: {
-    endpoint: '/videos',
+    endpoint: '/feed/videos',
     entity: Video,
     service: ImportVideosService,
   },
   news: {
-    endpoint: '/news',
+    endpoint: '/feed/news',
     entity: Article,
     service: ImportNewsService,
   },

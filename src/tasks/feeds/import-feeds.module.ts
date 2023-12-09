@@ -13,7 +13,7 @@ import { Video } from 'src/domains/videos/domain/entities/video.entity';
   imports: [
     HttpModule.registerAsync({
       useFactory: () => ({
-        baseURL: env('EUROGAMER_FEED_URL'),
+        baseURL: env('EUROGAMER_URL'),
       }),
     }),
     TypeOrmModule.forFeature([Article, Video]),

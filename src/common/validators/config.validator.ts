@@ -5,7 +5,7 @@ const EUROGAMER_API_CONFIG = {
 };
 
 const EUROGAMER_FEED_CONFIG = {
-  EUROGAMER_FEED_URL: z.string().url(),
+  EUROGAMER_URL: z.string().url(),
 };
 
 const configSchema = z.object({
