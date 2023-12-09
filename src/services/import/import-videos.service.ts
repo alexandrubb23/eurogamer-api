@@ -32,8 +32,8 @@ export class ImportVideosService {
   public async importData(videos: ItemResponse[]) {
     const importVideos = videos.map((video) => () => this.importVideo(video));
     const importedVideos = await limitConcurrentRequests(
-      ImportVideosService.LIMIT_CONCURRENT_REQUESTS,
       importVideos,
+      ImportVideosService.LIMIT_CONCURRENT_REQUESTS,
     );
 
     importedVideos.forEach((importedVideo, index) => {

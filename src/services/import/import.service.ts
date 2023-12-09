@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 import { keys } from 'lodash/fp';
 import { DataSource } from 'typeorm';
@@ -8,6 +8,7 @@ import { DOMAINS_CONFIG } from './constants/domains.constants';
 import { Domain, DomainAPIClient } from './models/domains.types';
 import { ConfigService } from '@nestjs/config';
 import { ConfigSchemaType } from 'src/common/validators/config.validator';
+import { limitConcurrentRequests } from 'src/common/utils/limit-concurrent-requests.utils';
 
 export type ItemResponse = {
   description: string;
@@ -26,6 +27,9 @@ export type Item = {
 };
 
 export class ImportService {
+  private static LIMIT_CONCURRENT_REQUESTS = 1;
+  private readonly logger = new Logger(ImportService.name);
+
   constructor(
     @Inject(HTTP_API_CLIENT)
     private readonly apiClient: DomainAPIClient<ItemResponse>,
@@ -34,21 +38,24 @@ export class ImportService {
   ) {}
 
   public async import() {
-    const importDomains: Promise<void>[] = Object.entries(DOMAINS_CONFIG).map(
+    const importDomains = Object.entries(DOMAINS_CONFIG).map(
       ([domain]) =>
-        this.importByDomain(domain as Domain).catch((error) => {
-          console.error(`Error importing domain: ${domain}`, error);
-          return null;
-        }),
+        () =>
+          this.importByDomain(domain as Domain),
     );
 
-    const results = await Promise.allSettled(importDomains);
+    const importedDomains = await limitConcurrentRequests(
+      importDomains,
+      ImportService.LIMIT_CONCURRENT_REQUESTS,
+    );
 
-    results.forEach((result, index) => {
-      if (result.status === 'rejected') {
-        console.error(
+    importedDomains.forEach((importedDomain, index) => {
+      if (importedDomain.status === 'fulfilled') {
+        this.logger.debug(`Imported domain: ${keys(DOMAINS_CONFIG)[index]}`);
+      } else {
+        this.logger.error(
           `Error importing domain: ${keys(DOMAINS_CONFIG)[index]}`,
-          result.reason,
+          importedDomain.reason,
         );
       }
     });
