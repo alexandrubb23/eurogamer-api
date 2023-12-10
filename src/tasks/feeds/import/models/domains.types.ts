@@ -23,3 +23,19 @@ export type DomainConfig = {
     service: typeof AggregateNewsImportService;
   };
 };
+
+export type FeedItem = {
+  description: string;
+  guid: string;
+  link: string;
+  pubDate: string;
+  title: string;
+};
+
+export type FeedEntry = {
+  description: string;
+  link: string;
+  publishDate: string;
+  thumbnail: string;
+  title: string;
+};

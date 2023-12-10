@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import * as crypto from 'crypto';
-import { FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 
 import {
   ConflictException,
@@ -9,13 +9,10 @@ import {
   NotAcceptableException,
 } from '@nestjs/common';
 import { FeedEntry } from 'src/common/domains/entities/feed-entry.entity';
-import { limitConcurrentRequests } from 'src/common/utils/limit-concurrent-requests.utils';
-import {
-  AggregateDomainsImportService,
-  FeedItem,
-} from './aggregate-domains-import.service';
-import { Domain } from './models/domains.types';
 import env from 'src/common/utils/env.helper';
+import { limitConcurrentRequests } from 'src/common/utils/limit-concurrent-requests.utils';
+import { AggregateDomainsImportService } from './aggregate-domains-import.service';
+import { Domain, FeedItem } from './models/domains.types';
 
 // TODO: Make generic
 export abstract class AggregateDomainImportService {

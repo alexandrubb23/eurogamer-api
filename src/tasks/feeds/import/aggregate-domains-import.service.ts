@@ -5,28 +5,12 @@ import { DataSource } from 'typeorm';
 
 import { HTTP_API_CLIENT } from 'src/common/providers/http-api-client.provider';
 import { DOMAINS_CONFIG } from './constants/domains.constants';
-import { Domain, DomainAPIClient } from './models/domains.types';
+import { Domain, DomainAPIClient, FeedItem } from './models/domains.types';
 import { ConfigService } from '@nestjs/config';
 import { ConfigSchemaType } from 'src/common/validators/config.validator';
 import { limitConcurrentRequests } from 'src/common/utils/limit-concurrent-requests.utils';
 import { AggregateDomainImportService } from './aggregate-abstract-domain.import.service';
 import env from 'src/common/utils/env.helper';
-
-export type FeedItem = {
-  description: string;
-  guid: string;
-  link: string;
-  pubDate: string;
-  title: string;
-};
-
-export type FeedEntry = {
-  description: string;
-  link: string;
-  publishDate: string;
-  thumbnail: string;
-  title: string;
-};
 
 export class AggregateDomainsImportService {
   private readonly limitRequests = env.int(
