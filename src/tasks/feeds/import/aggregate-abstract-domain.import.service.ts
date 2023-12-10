@@ -15,10 +15,11 @@ import {
   FeedItem,
 } from './aggregate-domains-import.service';
 import { Domain } from './models/domains.types';
+import env from 'src/common/utils/env.helper';
 
 // TODO: Make generic
 export abstract class AggregateDomainImportService {
-  private static LIMIT_CONCURRENT_REQUESTS = 5;
+  private limitRequests = env.int('EUROGAMER_LIMIT_CONCURRENT_ITEMS_REQUESTS');
   private readonly logger: Logger = new Logger(this.constructor.name);
 
   constructor(
@@ -39,7 +40,7 @@ export abstract class AggregateDomainImportService {
     const importData = data.map((item) => () => this.importItem(item));
     const importedData = await limitConcurrentRequests(
       importData,
-      AggregateDomainImportService.LIMIT_CONCURRENT_REQUESTS,
+      this.limitRequests,
     );
 
     importedData.forEach((importedItem, index) => {

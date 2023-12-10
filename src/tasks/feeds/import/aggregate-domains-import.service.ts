@@ -10,6 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { ConfigSchemaType } from 'src/common/validators/config.validator';
 import { limitConcurrentRequests } from 'src/common/utils/limit-concurrent-requests.utils';
 import { AggregateDomainImportService } from './aggregate-abstract-domain.import.service';
+import env from 'src/common/utils/env.helper';
 
 export type FeedItem = {
   description: string;
@@ -28,7 +29,9 @@ export type FeedEntry = {
 };
 
 export class AggregateDomainsImportService {
-  private static LIMIT_CONCURRENT_REQUESTS = 1;
+  private readonly limitRequests = env.int(
+    'EUROGAMER_LIMIT_CONCURRENT_DOMAINS_REQUESTS',
+  );
   private readonly logger = new Logger(AggregateDomainsImportService.name);
 
   constructor(
@@ -47,7 +50,7 @@ export class AggregateDomainsImportService {
 
     const importedDomains = await limitConcurrentRequests(
       importDomains,
-      AggregateDomainsImportService.LIMIT_CONCURRENT_REQUESTS,
+      this.limitRequests,
     );
 
     importedDomains.forEach((importedDomain, index) => {
