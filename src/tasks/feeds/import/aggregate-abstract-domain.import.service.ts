@@ -135,7 +135,7 @@ export abstract class AggregateDomainImportService {
     cheerio: cheerio.CheerioAPI,
     item: FeedItem,
   ): FeedEntry {
-    const title = cheerio('h1.title').text();
+    const title = cheerio('h1.title').text().replace(/\n/g, '').trim();
     if (!title) throw new NotAcceptableException('Title not found');
 
     const description = cheerio('.article_body_content').find('p').text();
@@ -150,7 +150,7 @@ export abstract class AggregateDomainImportService {
     return {
       description,
       link: item.link,
-      publishDate,
+      publishDate: publishDate.replace(/\n/g, '').trim(),
       thumbnail,
       title,
     } as FeedEntry;
