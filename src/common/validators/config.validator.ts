@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 const EUROGAMER_API_CONFIG = {
   EUROGAMER_APP_PORT: z.coerce.number().positive(),
+  EUROGAMER_DEFAULT_API_VERSION: z.string(),
 };
 
 const EUROGAMER_DATABASE_CONFIG = {

@@ -4,9 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AggregateDomainsImportService } from 'src/tasks/feeds/import/aggregate-domains-import.service';
 import { AggregateImportTasksService } from './aggregate-import-tasks.service';
-import { Article } from 'src/domains/news/domain/entities/article.entity';
+import { Article } from 'src/v1/domains/news/domain/entities/article.entity';
 import { HttpAPIClientProvider } from 'src/common/providers/http-api-client.provider';
-import { Video } from 'src/domains/videos/domain/entities/video.entity';
+import { Video } from 'src/v1/domains/videos/domain/entities/video.entity';
 import env from 'src/common/utils/env.helper';
 
 @Module({

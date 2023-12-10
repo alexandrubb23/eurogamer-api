@@ -1,9 +1,9 @@
 import { APIClientService } from 'src/services/api-client.service';
 import { DOMAINS_CONFIG } from '../constants/domains.constants';
-import { Article } from 'src/domains/news/domain/entities/article.entity';
+import { Article } from 'src/v1/domains/news/domain/entities/article.entity';
 import { AggregateVideoImportService } from '../aggregate-videos-import.service';
 import { AggregateNewsImportService } from '../aggregate-news-import.service';
-import { Video } from 'src/domains/videos/domain/entities/video.entity';
+import { Video } from 'src/v1/domains/videos/domain/entities/video.entity';
 
 export type Domain = keyof typeof DOMAINS_CONFIG;
 

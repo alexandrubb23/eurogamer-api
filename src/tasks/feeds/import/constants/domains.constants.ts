@@ -1,8 +1,8 @@
-import { Article } from 'src/domains/news/domain/entities/article.entity';
+import { Article } from 'src/v1/domains/news/domain/entities/article.entity';
 import { AggregateNewsImportService } from '../aggregate-news-import.service';
 import { AggregateVideoImportService } from '../aggregate-videos-import.service';
 import { DomainConfig } from '../models/domains.types';
-import { Video } from 'src/domains/videos/domain/entities/video.entity';
+import { Video } from 'src/v1/domains/videos/domain/entities/video.entity';
 
 export const DOMAINS = {
   VIDEOS: 'videos',

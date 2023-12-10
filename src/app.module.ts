@@ -7,9 +7,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import env from './common/utils/env.helper';
 import validateEnvironmentVariables from './common/validators/config.validator';
-import { VideosModule } from './domains/videos/videos.module';
+import { VideosModule } from './v1/domains/videos/videos.module';
 import { ImportFeedModule } from './tasks/feeds/aggregate-import-tasks.module';
-import { NewsModule } from './domains/news/news.module';
+import { NewsModule } from './v1/domains/news/news.module';
 
 @Module({
   imports: [

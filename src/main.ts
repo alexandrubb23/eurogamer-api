@@ -1,12 +1,16 @@
 import { NestFactory } from '@nestjs/core';
+
+import { apiVersioning } from './app/api/default-versioning.api';
 import { AppModule } from './app.module';
-import env from './common/utils/env.helper';
 import { validatePipe } from './app/validators/pipe.validator';
+import env from './common/utils/env.helper';
+
+const appModules = [validatePipe, apiVersioning];
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  validatePipe(app);
+  appModules.forEach((module) => module(app));
 
   const EUROGAMER_APP_PORT = env.int('EUROGAMER_APP_PORT');
   await app.listen(EUROGAMER_APP_PORT, () => {
