@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ImportFeedsModule } from './tasks/feeds/import-feeds.module';
+import { ImportFeedModule } from './tasks/feeds/aggregate-import-tasks.module';
 import env from './common/utils/env.helper';
 import validateEnvironmentVariables from './common/validators/config.validator';
 
@@ -16,7 +16,7 @@ import validateEnvironmentVariables from './common/validators/config.validator';
       isGlobal: true,
     }),
     ScheduleModule.forRoot(),
-    ImportFeedsModule,
+    ImportFeedModule,
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
         type: 'mysql',

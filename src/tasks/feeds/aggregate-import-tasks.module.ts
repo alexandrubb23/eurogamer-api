@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { AggregateDomainImportService } from 'src/services/import/aggregate-domain-import.service';
-import { AggregateImportTasksService } from './import-feeds.service';
+import { AggregateDomainImportService } from 'src/tasks/feeds/import/aggregate-domain-import.service';
+import { AggregateImportTasksService } from './aggregate-import-tasks.service';
 import { Article } from 'src/domains/news/domain/entities/article.entity';
 import { HttpAPIClientProvider } from 'src/common/providers/http-api-client.provider';
 import { Video } from 'src/domains/videos/domain/entities/video.entity';
@@ -24,4 +24,4 @@ import env from 'src/common/utils/env.helper';
     AggregateImportTasksService,
   ],
 })
-export class ImportFeedsModule {}
+export class ImportFeedModule {}

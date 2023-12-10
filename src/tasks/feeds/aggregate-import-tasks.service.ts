@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
-import { AggregateDomainImportService } from 'src/services/import/aggregate-domain-import.service';
+import { AggregateDomainImportService } from 'src/tasks/feeds/import/aggregate-domain-import.service';
 
 @Injectable()
 export class AggregateImportTasksService {

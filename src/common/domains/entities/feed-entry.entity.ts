@@ -1,6 +1,6 @@
 import { PrimaryColumn, Index, Column } from 'typeorm';
 
-export class Item {
+export class FeedEntry {
   @PrimaryColumn()
   @Index({ unique: true })
   uuid: string;
@@ -17,6 +17,7 @@ export class Item {
   thumbnail: string;
 
   @Column()
+  @Index({ unique: true })
   link: string;
 
   @Column()
