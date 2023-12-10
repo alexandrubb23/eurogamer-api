@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
-
-import { HttpAPIClientProvider } from 'src/common/providers/http-api-client.provider';
-import { ImportService } from 'src/services/import/import.service';
-import { ImportTasksService } from './import-feeds.service';
-import env from 'src/common/utils/env.helper';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { AggregateDomainImportService } from 'src/services/import/aggregate-domain-import.service';
+import { AggregateImportTasksService } from './import-feeds.service';
 import { Article } from 'src/domains/news/domain/entities/article.entity';
+import { HttpAPIClientProvider } from 'src/common/providers/http-api-client.provider';
 import { Video } from 'src/domains/videos/domain/entities/video.entity';
+import env from 'src/common/utils/env.helper';
 
 @Module({
   imports: [
@@ -18,6 +18,10 @@ import { Video } from 'src/domains/videos/domain/entities/video.entity';
     }),
     TypeOrmModule.forFeature([Article, Video]),
   ],
-  providers: [HttpAPIClientProvider, ImportService, ImportTasksService],
+  providers: [
+    HttpAPIClientProvider,
+    AggregateDomainImportService,
+    AggregateImportTasksService,
+  ],
 })
 export class ImportFeedsModule {}

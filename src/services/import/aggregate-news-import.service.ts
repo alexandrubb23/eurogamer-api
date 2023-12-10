@@ -1,15 +1,18 @@
 import { Repository } from 'typeorm';
 
 import { Article } from 'src/domains/news/domain/entities/article.entity';
-import { ImportService, ItemResponse } from './import.service';
+import {
+  AggregateDomainImportService,
+  FeedItem,
+} from './aggregate-domain-import.service';
 
-export class ImportNewsService {
+export class AggregateNewsImportService {
   constructor(
-    private readonly importService: ImportService,
+    private readonly importService: AggregateDomainImportService,
     private readonly newsRepository: Repository<Article>,
   ) {}
 
-  public async importData(items: ItemResponse[]) {
+  public async importData(items: FeedItem[]) {
     // items.forEach((item) => {
     //   this.articlesRepository.save({
     //     uuid: crypto.randomUUID(),

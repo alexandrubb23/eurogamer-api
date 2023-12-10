@@ -10,14 +10,18 @@ import {
 } from '@nestjs/common';
 import { limitConcurrentRequests } from 'src/common/utils/limit-concurrent-requests.utils';
 import { Video } from 'src/domains/videos/domain/entities/video.entity';
-import { ImportService, Item, ItemResponse } from './import.service';
+import {
+  AggregateDomainImportService,
+  FeedEntry,
+  FeedItem,
+} from './aggregate-domain-import.service';
 
-export class ImportVideosService {
+export class AggregateVideoImportService {
   private static LIMIT_CONCURRENT_REQUESTS = 5;
-  private readonly logger = new Logger(ImportVideosService.name);
+  private readonly logger = new Logger(AggregateVideoImportService.name);
 
   constructor(
-    private readonly importService: ImportService,
+    private readonly importService: AggregateDomainImportService,
     private readonly videosRepository: Repository<Video>,
   ) {}
 
@@ -29,11 +33,11 @@ export class ImportVideosService {
     });
   }
 
-  public async importData(videos: ItemResponse[]) {
+  public async importData(videos: FeedItem[]) {
     const importVideos = videos.map((video) => () => this.importVideo(video));
     const importedVideos = await limitConcurrentRequests(
       importVideos,
-      ImportVideosService.LIMIT_CONCURRENT_REQUESTS,
+      AggregateVideoImportService.LIMIT_CONCURRENT_REQUESTS,
     );
 
     importedVideos.forEach((importedVideo, index) => {
@@ -49,7 +53,7 @@ export class ImportVideosService {
     });
   }
 
-  private async importVideo(video: ItemResponse) {
+  private async importVideo(video: FeedItem) {
     const itemPath = this.getItemPath(video);
     const existingVideo = await this.findVideoByLink(video.link);
 
@@ -77,7 +81,7 @@ export class ImportVideosService {
     }
   }
 
-  private saveVideo(video: Item): Promise<Item> {
+  private saveVideo(video: FeedEntry): Promise<FeedEntry> {
     const { title, description, thumbnail, publishDate, link } = video;
 
     const newVideo = {
@@ -102,7 +106,7 @@ export class ImportVideosService {
     }
   }
 
-  private async updateVideo(existingVideo: Video, newVideo: ItemResponse) {
+  private async updateVideo(existingVideo: Video, newVideo: FeedItem) {
     if (
       existingVideo.title === newVideo.title &&
       existingVideo.description === newVideo.description
@@ -131,8 +135,8 @@ export class ImportVideosService {
 
   private parseSourcePageWithCheerio(
     cheerio: cheerio.CheerioAPI,
-    video: ItemResponse,
-  ): Item {
+    video: FeedItem,
+  ): FeedEntry {
     const title = cheerio('h1.title').text();
     if (!title) throw new NotAcceptableException('Title not found');
 
@@ -154,7 +158,7 @@ export class ImportVideosService {
     };
   }
 
-  private getItemPath(video: ItemResponse) {
+  private getItemPath(video: FeedItem) {
     const apiEndpoint = this.configService.get<string>('EUROGAMER_URL');
     return video.link.replace(apiEndpoint, '');
   }

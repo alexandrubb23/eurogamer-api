@@ -10,7 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { ConfigSchemaType } from 'src/common/validators/config.validator';
 import { limitConcurrentRequests } from 'src/common/utils/limit-concurrent-requests.utils';
 
-export type ItemResponse = {
+export type FeedItem = {
   description: string;
   guid: string;
   link: string;
@@ -18,21 +18,21 @@ export type ItemResponse = {
   title: string;
 };
 
-export type Item = {
-  title: string;
+export type FeedEntry = {
   description: string;
-  thumbnail: string;
   link: string;
   publishDate: string;
+  thumbnail: string;
+  title: string;
 };
 
-export class ImportService {
+export class AggregateDomainImportService {
   private static LIMIT_CONCURRENT_REQUESTS = 1;
-  private readonly logger = new Logger(ImportService.name);
+  private readonly logger = new Logger(AggregateDomainImportService.name);
 
   constructor(
     @Inject(HTTP_API_CLIENT)
-    private readonly apiClient: DomainAPIClient<ItemResponse>,
+    private readonly apiClient: DomainAPIClient<FeedItem>,
     private readonly dataSource: DataSource,
     private readonly configService: ConfigService<ConfigSchemaType>,
   ) {}
@@ -46,7 +46,7 @@ export class ImportService {
 
     const importedDomains = await limitConcurrentRequests(
       importDomains,
-      ImportService.LIMIT_CONCURRENT_REQUESTS,
+      AggregateDomainImportService.LIMIT_CONCURRENT_REQUESTS,
     );
 
     importedDomains.forEach((importedDomain, index) => {
@@ -74,6 +74,7 @@ export class ImportService {
   }
 
   private async getItemsByDomain(domain: Domain) {
+    // TODO: Try catch and log error
     const apiClient = this.apiClient[domain];
     const { rss } = await apiClient.getAll();
 

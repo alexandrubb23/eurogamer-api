@@ -39,3 +39,6 @@ lerna-debug.log*
 
 # Database
 /mysql-data
+
+# Notes docs
+notes.md
