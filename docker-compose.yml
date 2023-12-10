@@ -30,14 +30,14 @@ services:
     restart: unless-stopped
     command: --default-authentication-plugin=caching_sha2_password
     ports:
-      - ${EUROGAMER_DATABASE_PORT}:${EUROGAMER_DATABASE_PORT}
+      - ${EUROGAMER_DB_PORT}:${EUROGAMER_DB_PORT}
     volumes:
       - ./mysql-data:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: $EUROGAMER_DATABASE_PASSWORD
-      MYSQL_DATABASE: $EUROGAMER_DATABASE_NAME
-      MYSQL_USER: $EUROGAMER_DATABASE_USER
-      MYSQL_PASSWORD: $EUROGAMER_DATABASE_PASSWORD
+      MYSQL_ROOT_PASSWORD: $EUROGAMER_DB_PASSWORD
+      MYSQL_DATABASE: $EUROGAMER_DB_NAME
+      MYSQL_USER: $EUROGAMER_DB_USERNAME
+      MYSQL_PASSWORD: $EUROGAMER_DB_PASSWORD
     env_file: ./.env
     networks:
       - web-network
@@ -45,8 +45,8 @@ services:
     image: mysql:8
     restart: always
     ports:
-      - 3306:3306
+      - ${EUROGAMER_DB_PORT}:${EUROGAMER_DB_PORT}
     environment:
-      MYSQL_ROOT_PASSWORD: $EUROGAMER_DATABASE_PASSWORD
+      MYSQL_ROOT_PASSWORD: $EUROGAMER_DB_PASSWORD
     profiles:
       - test
