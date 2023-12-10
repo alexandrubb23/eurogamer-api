@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
-import { AggregateDomainImportService } from 'src/tasks/feeds/import/aggregate-domain-import.service';
+import { AggregateDomainsImportService } from 'src/tasks/feeds/import/aggregate-domains-import.service';
 
 @Injectable()
 export class AggregateImportTasksService {
-  constructor(private readonly importService: AggregateDomainImportService) {}
+  constructor(private readonly importService: AggregateDomainsImportService) {}
 
   @Cron(CronExpression.EVERY_10_SECONDS)
   handleImport() {

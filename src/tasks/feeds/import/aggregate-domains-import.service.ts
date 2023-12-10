@@ -9,6 +9,7 @@ import { Domain, DomainAPIClient } from './models/domains.types';
 import { ConfigService } from '@nestjs/config';
 import { ConfigSchemaType } from 'src/common/validators/config.validator';
 import { limitConcurrentRequests } from 'src/common/utils/limit-concurrent-requests.utils';
+import { AggregateDomainImportService } from './aggregate-abstract-domain.import.service';
 
 export type FeedItem = {
   description: string;
@@ -26,9 +27,9 @@ export type FeedEntry = {
   title: string;
 };
 
-export class AggregateDomainImportService {
+export class AggregateDomainsImportService {
   private static LIMIT_CONCURRENT_REQUESTS = 1;
-  private readonly logger = new Logger(AggregateDomainImportService.name);
+  private readonly logger = new Logger(AggregateDomainsImportService.name);
 
   constructor(
     @Inject(HTTP_API_CLIENT)
@@ -46,7 +47,7 @@ export class AggregateDomainImportService {
 
     const importedDomains = await limitConcurrentRequests(
       importDomains,
-      AggregateDomainImportService.LIMIT_CONCURRENT_REQUESTS,
+      AggregateDomainsImportService.LIMIT_CONCURRENT_REQUESTS,
     );
 
     importedDomains.forEach((importedDomain, index) => {
@@ -90,6 +91,13 @@ export class AggregateDomainImportService {
 
     const repositoryDomain = this.getRepository(entity);
     const serviceDomain = new service(this, repositoryDomain);
+    if (!(serviceDomain instanceof AggregateDomainImportService)) {
+      throw new Error(
+        `Service ${
+          (serviceDomain as NonNullable<unknown>).constructor.name
+        } must extend AggregateDomainImportService`,
+      );
+    }
 
     return serviceDomain;
   }

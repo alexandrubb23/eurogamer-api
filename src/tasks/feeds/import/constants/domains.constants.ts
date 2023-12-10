@@ -4,6 +4,11 @@ import { AggregateVideoImportService } from '../aggregate-videos-import.service'
 import { DomainConfig } from '../models/domains.types';
 import { Video } from 'src/domains/videos/domain/entities/video.entity';
 
+export const DOMAINS = {
+  VIDEOS: 'videos',
+  NEWS: 'news',
+} as const;
+
 export const DOMAINS_CONFIG: DomainConfig = {
   videos: {
     endpoint: '/feed/videos',

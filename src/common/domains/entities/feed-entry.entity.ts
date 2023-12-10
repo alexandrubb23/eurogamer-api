@@ -3,23 +3,23 @@ import { PrimaryColumn, Index, Column } from 'typeorm';
 export class FeedEntry {
   @PrimaryColumn()
   @Index({ unique: true })
-  uuid: string;
+  readonly uuid: string;
 
   @Column()
-  title: string;
+  readonly title: string;
 
   @Column({
     type: 'longtext',
   })
-  description: string;
+  readonly description: string;
 
   @Column()
-  thumbnail: string;
+  readonly thumbnail: string;
 
   @Column()
   @Index({ unique: true })
-  link: string;
+  readonly link: string;
 
   @Column()
-  publishDate: string;
+  readonly publishDate: string;
 }

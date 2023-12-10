@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { AggregateDomainImportService } from 'src/tasks/feeds/import/aggregate-domain-import.service';
+import { AggregateDomainsImportService } from 'src/tasks/feeds/import/aggregate-domains-import.service';
 import { AggregateImportTasksService } from './aggregate-import-tasks.service';
 import { Article } from 'src/domains/news/domain/entities/article.entity';
 import { HttpAPIClientProvider } from 'src/common/providers/http-api-client.provider';
@@ -20,7 +20,7 @@ import env from 'src/common/utils/env.helper';
   ],
   providers: [
     HttpAPIClientProvider,
-    AggregateDomainImportService,
+    AggregateDomainsImportService,
     AggregateImportTasksService,
   ],
 })

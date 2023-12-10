@@ -1,27 +1,15 @@
 import { Repository } from 'typeorm';
 
 import { Article } from 'src/domains/news/domain/entities/article.entity';
-import {
-  AggregateDomainImportService,
-  FeedItem,
-} from './aggregate-domain-import.service';
+import { AggregateDomainImportService } from './aggregate-abstract-domain.import.service';
+import { AggregateDomainsImportService } from './aggregate-domains-import.service';
+import { DOMAINS } from './constants/domains.constants';
 
-export class AggregateNewsImportService {
+export class AggregateNewsImportService extends AggregateDomainImportService {
   constructor(
-    private readonly importService: AggregateDomainImportService,
-    private readonly newsRepository: Repository<Article>,
-  ) {}
-
-  public async importData(items: FeedItem[]) {
-    // items.forEach((item) => {
-    //   this.articlesRepository.save({
-    //     uuid: crypto.randomUUID(),
-    //     title: item.title,
-    //     description: item.description,
-    //     thumbnail: item.link,
-    //     link: item.link,
-    //     publishDate: item.pubDate,
-    //   });
-    // });
+    protected readonly importService: AggregateDomainsImportService,
+    protected readonly newsRepository: Repository<Article>,
+  ) {
+    super(DOMAINS.NEWS, importService, newsRepository);
   }
 }
