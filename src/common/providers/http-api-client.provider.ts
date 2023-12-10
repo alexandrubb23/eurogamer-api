@@ -1,6 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 
-import { RSSAPIClient } from 'src/services/api-client.service';
+import { APIClientService } from 'src/services/api-client.service';
 import { DOMAINS_CONFIG } from 'src/services/import/constants/domains.constants';
 import { DomainAPIClient } from 'src/services/import/models/domains.types';
 
@@ -14,7 +14,7 @@ export const HttpAPIClientProvider = {
 
       return {
         ...acc,
-        [domain]: new RSSAPIClient<T>(endpoint, httpService),
+        [domain]: new APIClientService<T>(endpoint, httpService),
       };
     }, {} as DomainAPIClient<T>);
   },

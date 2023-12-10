@@ -74,11 +74,15 @@ export class AggregateDomainImportService {
   }
 
   private async getItemsByDomain(domain: Domain) {
-    // TODO: Try catch and log error
-    const apiClient = this.apiClient[domain];
-    const { rss } = await apiClient.getAll();
+    try {
+      const apiClient = this.apiClient[domain];
+      const { rss } = await apiClient.getAll();
 
-    return rss.channel.item;
+      return rss.channel.item;
+    } catch (error) {
+      this.logger.error(`Error getting items from ${domain}`, error);
+      Promise.reject(error);
+    }
   }
 
   private factoryDomainService(domain: Domain) {

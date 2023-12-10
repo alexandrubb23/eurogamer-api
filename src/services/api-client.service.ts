@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { HttpException } from '@nestjs/common';
+import { HttpException, InternalServerErrorException } from '@nestjs/common';
 import { AxiosError } from '@nestjs/terminus/dist/errors/axios.error';
 import { XMLParser } from 'fast-xml-parser';
 import { catchError, firstValueFrom, Observable } from 'rxjs';
@@ -20,7 +20,7 @@ export interface FetchResponse<T> {
 
 const xmlParser = new XMLParser();
 
-export class RSSAPIClient<T> {
+export class APIClientService<T> {
   constructor(
     private readonly endpoint: string,
     private readonly httpService: HttpService,
@@ -50,6 +50,10 @@ export class RSSAPIClient<T> {
   };
 
   private handleError = (error: AxiosError) => {
+    if (!error.response) {
+      throw new InternalServerErrorException(error.message);
+    }
+
     const { statusText, status } = error.response;
     const statusCode = parseInt(status);
 
