@@ -9,6 +9,7 @@ import env from './common/utils/env.helper';
 import validateEnvironmentVariables from './common/validators/config.validator';
 import { VideosModule } from './domains/videos/videos.module';
 import { ImportFeedModule } from './tasks/feeds/aggregate-import-tasks.module';
+import { NewsModule } from './domains/news/news.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ImportFeedModule } from './tasks/feeds/aggregate-import-tasks.module';
       }),
     }),
     VideosModule,
+    NewsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
