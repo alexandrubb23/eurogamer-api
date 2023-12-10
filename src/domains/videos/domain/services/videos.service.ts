@@ -1,7 +1,9 @@
+import { FindManyOptions, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+
 import { Video } from '../entities/video.entity';
-import { Repository } from 'typeorm';
+import { VideosQueryParams } from '../../application/queries/videos.query';
 
 @Injectable()
 export class VideosService {
@@ -10,7 +12,17 @@ export class VideosService {
     private readonly videosRepository: Repository<Video>,
   ) {}
 
-  getAllVideos() {
-    return this.videosRepository.find();
+  getAllVideos(videosQueryParams: VideosQueryParams) {
+    const { skip, take, order } = videosQueryParams;
+
+    const options: FindManyOptions<Video> = {
+      skip,
+      take,
+      order: {
+        publishDate: order,
+      },
+    };
+
+    return this.videosRepository.find(options);
   }
 }
