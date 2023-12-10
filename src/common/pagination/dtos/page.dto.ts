@@ -3,7 +3,7 @@ import { PageMetaDto } from './page-meta.dto';
 
 export class PageDto<T> {
   @ApiProperty({ isArray: true })
-  readonly data: T[];
+  private data: T[];
 
   @ApiProperty({ type: () => PageMetaDto })
   readonly meta: PageMetaDto;

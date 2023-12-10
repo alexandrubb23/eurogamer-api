@@ -4,8 +4,9 @@ import { apiVersioning } from './app/api/default-versioning.api';
 import { AppModule } from './app.module';
 import { validatePipe } from './app/validators/pipe.validator';
 import env from './common/utils/env.helper';
+import { createSwaggerDocument } from './app/api/swagger.api';
 
-const appModules = [validatePipe, apiVersioning];
+const appModules = [apiVersioning, createSwaggerDocument, validatePipe];
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

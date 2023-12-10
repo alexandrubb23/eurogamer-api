@@ -3,8 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import env from './common/utils/env.helper';
 import validateEnvironmentVariables from './common/validators/config.validator';
 import { VideosModule } from './v1/domains/videos/videos.module';
@@ -34,7 +32,5 @@ import { NewsModule } from './v1/domains/news/news.module';
     VideosModule,
     NewsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
