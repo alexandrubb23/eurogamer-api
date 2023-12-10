@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { CronExpression } from '@nestjs/schedule';
 
-import { KeyOfCronExoression } from 'src/tasks/feeds/import/models/cron-expression.types';
+import { KeyOfCronExpression } from 'src/tasks/feeds/import/models/cron-expression.types';
 
 const EUROGAMER_API_CONFIG = {
   EUROGAMER_APP_PORT: z.coerce.number().positive(),
@@ -19,7 +19,7 @@ const EUROGAMER_DATABASE_CONFIG = {
 const EUROGAMER_FEED_CONFIG = {
   EUROGAMER_URL: z.string().url(),
   EUROGAMER_FEED_IMPORT_FREQUENCY: z.custom(
-    (value: KeyOfCronExoression) => CronExpression[value],
+    (value: KeyOfCronExpression) => CronExpression[value],
     (value: unknown) => ({
       message: `Invalid CronExpression key (${value}), Please check the documentation at https://docs.nestjs.com/techniques/task-scheduling#declarative-cron-jobs`,
     }),

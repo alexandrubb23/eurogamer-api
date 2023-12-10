@@ -3,13 +3,13 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import env from 'src/common/utils/env.helper';
 
 import { AggregateDomainsImportService } from 'src/tasks/feeds/import/aggregate-domains-import.service';
-import { KeyOfCronExoression } from './import/models/cron-expression.types';
+import { KeyOfCronExpression } from './import/models/cron-expression.types';
 
 @Injectable()
 export class AggregateImportTasksService {
   private static CRON_TIME = env(
     'EUROGAMER_FEED_IMPORT_FREQUENCY',
-  ) as KeyOfCronExoression;
+  ) as KeyOfCronExpression;
 
   constructor(private readonly importService: AggregateDomainsImportService) {}
 
