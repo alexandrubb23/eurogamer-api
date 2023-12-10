@@ -10,12 +10,12 @@ export const DOMAINS = {
 } as const;
 
 export const DOMAINS_CONFIG: DomainConfig = {
-  videos: {
+  [DOMAINS.VIDEOS]: {
     endpoint: '/feed/videos',
     entity: Video,
     service: AggregateVideoImportService,
   },
-  news: {
+  [DOMAINS.NEWS]: {
     endpoint: '/feed/news',
     entity: Article,
     service: AggregateNewsImportService,
