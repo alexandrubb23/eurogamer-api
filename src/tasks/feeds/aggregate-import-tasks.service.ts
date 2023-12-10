@@ -7,7 +7,7 @@ import { AggregateDomainsImportService } from 'src/tasks/feeds/import/aggregate-
 export class AggregateImportTasksService {
   constructor(private readonly importService: AggregateDomainsImportService) {}
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_10_MINUTES)
   handleImport() {
     this.importService.import();
   }

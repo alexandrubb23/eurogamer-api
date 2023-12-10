@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ImportFeedModule } from './tasks/feeds/aggregate-import-tasks.module';
 import env from './common/utils/env.helper';
 import validateEnvironmentVariables from './common/validators/config.validator';
+import { VideosModule } from './domains/videos/videos.module';
+import { ImportFeedModule } from './tasks/feeds/aggregate-import-tasks.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import validateEnvironmentVariables from './common/validators/config.validator';
         synchronize: env.bool('EUROGAMER_DATABASE_SYNCHRONIZE'),
       }),
     }),
+    VideosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
