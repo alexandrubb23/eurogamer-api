@@ -1,5 +1,4 @@
 import { HttpService } from '@nestjs/axios';
-import { reduce } from 'lodash';
 
 import { APIClientService } from 'src/services/api-client.service';
 import { DOMAINS_CONFIG } from 'src/tasks/feeds/import/constants/domains.constants';
