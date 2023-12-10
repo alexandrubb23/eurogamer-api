@@ -15,7 +15,7 @@ import { ConfigSchemaType } from '../validators/config.validator';
 import { isArray } from 'lodash';
 import { PageDto } from '../pagination/dtos/page.dto';
 import { PageMetaDto } from '../pagination/dtos/page-meta.dto';
-import { PageOptionsDto } from '../pagination/queries/page-options.query';
+import { PageOptionsQueryParameters } from '../pagination/queries/page-options.query';
 
 export interface WhereClauseRequest<T> extends Request {
   whereClause: FindManyOptions<T>;
@@ -62,7 +62,7 @@ export function factoryPaginationInterceptor(entity: EntityClassOrSchema) {
       countTotal: number,
     ): PageMetaDto {
       const pageMetaDtoParameters = {
-        pageOptionsDto: {
+        pageQueryParameters: {
           ...request.query,
           page: Number(
             request.query.page ??
@@ -72,7 +72,7 @@ export function factoryPaginationInterceptor(entity: EntityClassOrSchema) {
             request.query.take ??
               this.configService.get('EUROGAMER_DEFAULT_PAGE_SIZE'),
           ),
-        } as PageOptionsDto,
+        } as PageOptionsQueryParameters,
         itemsCount: countTotal,
       };
 

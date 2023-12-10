@@ -4,7 +4,7 @@ import { IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
 import { Order } from '../enums/order.enum';
 import env from 'src/common/utils/env.helper';
 
-export class PageOptionsDto {
+export class PageOptionsQueryParameters {
   @ApiPropertyOptional({ enum: Order, default: Order.DESC })
   @IsEnum(Order)
   @IsOptional()

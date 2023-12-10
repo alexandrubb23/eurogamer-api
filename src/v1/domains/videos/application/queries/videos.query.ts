@@ -1,3 +1,3 @@
-import { PageOptionsDto } from 'src/common/pagination/queries/page-options.query';
+import { PageOptionsQueryParameters } from 'src/common/pagination/queries/page-options.query';
 
-export class VideosQueryParams extends PageOptionsDto {}
+export class VideosQueryParams extends PageOptionsQueryParameters {}

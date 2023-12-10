@@ -1,3 +1,3 @@
-import { PageOptionsDto } from 'src/common/pagination/queries/page-options.query';
+import { PageOptionsQueryParameters } from 'src/common/pagination/queries/page-options.query';
 
-export class NewsQueryParams extends PageOptionsDto {}
+export class NewsQueryParams extends PageOptionsQueryParameters {}

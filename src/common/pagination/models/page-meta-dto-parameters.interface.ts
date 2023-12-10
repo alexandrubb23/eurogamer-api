@@ -1,6 +1,6 @@
-import { PageOptionsDto } from '../queries/page-options.query';
+import { PageOptionsQueryParameters } from '../queries/page-options.query';
 
 export interface IPageMetaDtoParameters {
-  pageOptionsDto: PageOptionsDto;
   itemsCount: number;
+  pageQueryParameters: PageOptionsQueryParameters;
 }

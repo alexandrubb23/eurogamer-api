@@ -22,7 +22,7 @@ export class PageMetaDto {
 
   constructor({
     itemsCount,
-    pageOptionsDto: { page, take },
+    pageQueryParameters: { page, take },
   }: IPageMetaDtoParameters) {
     this.page = page;
     this.take = take;
