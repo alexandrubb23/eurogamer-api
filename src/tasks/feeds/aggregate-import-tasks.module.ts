@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AggregateDomainsImportService } from 'src/tasks/feeds/import/aggregate-domains-import.service';
 import { AggregateImportTasksService } from './aggregate-import-tasks.service';
-import { Article } from 'src/v1/domains/news/domain/entities/article.entity';
+import { News } from 'src/v1/domains/news/domain/entities/new.entity';
 import { HttpAPIClientProvider } from 'src/common/providers/http-api-client.provider';
 import { Video } from 'src/v1/domains/videos/domain/entities/video.entity';
 import env from 'src/common/utils/env.helper';
@@ -16,7 +16,7 @@ import env from 'src/common/utils/env.helper';
         baseURL: env('EUROGAMER_URL'),
       }),
     }),
-    TypeOrmModule.forFeature([Article, Video]),
+    TypeOrmModule.forFeature([News, Video]),
   ],
   providers: [
     HttpAPIClientProvider,

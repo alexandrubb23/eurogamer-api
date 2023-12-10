@@ -2,7 +2,7 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { ApiFoundResponse, ApiTags } from '@nestjs/swagger';
 
 import { API_TAGS } from 'src/common/constants/api-tags.constants';
-import { Article } from '../../domain/entities/article.entity';
+import { News } from '../../domain/entities/new.entity';
 import { NewsQueryParams } from '../queries/news.query';
 import { NewsService } from '../../domain/services/news.service';
 import { PaginateResponse as PaginateResponse } from 'src/common/interceptors/paginate-response.interceptor';
@@ -18,11 +18,11 @@ import { API_ROUTES } from 'src/common/constants/api-routes.constants';
 export class NewsController {
   constructor(private readonly videosService: NewsService) {}
 
-  @ApiPaginatedResponse(Article)
-  @ApiFoundResponse({ type: Article })
-  @PaginateResponse(Article)
+  @ApiPaginatedResponse(News)
+  @ApiFoundResponse({ type: News })
+  @PaginateResponse(News)
   @Get()
-  getAllNews(@Query() newsQueryParams: NewsQueryParams): Promise<Article[]> {
+  getAllNews(@Query() newsQueryParams: NewsQueryParams): Promise<News[]> {
     return this.videosService.getAllNews(newsQueryParams);
   }
 }

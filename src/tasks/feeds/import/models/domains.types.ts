@@ -1,6 +1,6 @@
 import { APIClientService } from 'src/services/api-client.service';
 import { DOMAINS_CONFIG } from '../constants/domains.constants';
-import { Article } from 'src/v1/domains/news/domain/entities/article.entity';
+import { News } from 'src/v1/domains/news/domain/entities/new.entity';
 import { AggregateVideoImportService } from '../aggregate-videos-import.service';
 import { AggregateNewsImportService } from '../aggregate-news-import.service';
 import { Video } from 'src/v1/domains/videos/domain/entities/video.entity';
@@ -19,7 +19,7 @@ export type DomainConfig = {
   };
   news: {
     endpoint: string;
-    entity: typeof Article;
+    entity: typeof News;
     service: typeof AggregateNewsImportService;
   };
 };

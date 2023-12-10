@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, Repository } from 'typeorm';
-import { Article } from '../entities/article.entity';
+import { News } from '../entities/new.entity';
 import { NewsQueryParams } from '../../application/queries/news.query';
 
 @Injectable()
 export class NewsService {
   constructor(
-    @InjectRepository(Article)
-    private readonly newsRepository: Repository<Article>,
+    @InjectRepository(News)
+    private readonly newsRepository: Repository<News>,
   ) {}
 
   getAllNews(newsQueryParams: NewsQueryParams) {
     const { skip, take, order } = newsQueryParams;
 
-    const options: FindManyOptions<Article> = {
+    const options: FindManyOptions<News> = {
       skip,
       take,
       order: {

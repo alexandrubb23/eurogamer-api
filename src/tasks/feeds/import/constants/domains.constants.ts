@@ -1,4 +1,4 @@
-import { Article } from 'src/v1/domains/news/domain/entities/article.entity';
+import { News } from 'src/v1/domains/news/domain/entities/new.entity';
 import { AggregateNewsImportService } from '../aggregate-news-import.service';
 import { AggregateVideoImportService } from '../aggregate-videos-import.service';
 import { DomainConfig } from '../models/domains.types';
@@ -17,7 +17,7 @@ export const DOMAINS_CONFIG: DomainConfig = {
   },
   [DOMAINS.NEWS]: {
     endpoint: '/feed/news',
-    entity: Article,
+    entity: News,
     service: AggregateNewsImportService,
   },
 } as const;
