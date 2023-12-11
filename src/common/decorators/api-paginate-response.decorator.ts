@@ -5,7 +5,7 @@ import { PageDto } from '../pagination/dtos/page.dto';
 
 export const ApiPaginatedResponse = <TModel extends Type>(model: TModel) => {
   const properties = {
-    data: {
+    results: {
       type: 'array',
       items: { $ref: getSchemaPath(model) },
     },
