@@ -44,10 +44,16 @@ git clone https://github.com/alexandrubb23/eurogamer-api.git
 cd eurogamer-api
 ```
 
-3. Build and run Docker container
+4. Run the startup script
 
 ```bash
-docker compose up --build
+./start.sh
+```
+
+5. Stop Docker container
+
+```bash
+docker compose down
 ```
 
 ## API Endpoints
