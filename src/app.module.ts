@@ -5,10 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import env from './common/utils/env.helper';
 import validateEnvironmentVariables from './common/validators/config.validator';
-import { VideosModule } from './v1/domains/videos/videos.module';
 import { ImportFeedModule } from './tasks/feeds/aggregate-import-tasks.module';
-import { NewsModule } from './v1/domains/news/news.module';
-import { HealthCheckModule } from './v1/domains/health/health-check.module';
+import { ApiDomainsModule } from './v1/domains/api-domains.module';
 
 @Module({
   imports: [
@@ -30,9 +28,7 @@ import { HealthCheckModule } from './v1/domains/health/health-check.module';
         synchronize: env.bool('EUROGAMER_DATABASE_SYNCHRONIZE', false),
       }),
     }),
-    VideosModule,
-    NewsModule,
-    HealthCheckModule,
+    ApiDomainsModule,
   ],
 })
 export class AppModule {}
