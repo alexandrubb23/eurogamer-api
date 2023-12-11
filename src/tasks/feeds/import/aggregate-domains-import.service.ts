@@ -1,28 +1,26 @@
-import { Inject, Logger } from '@nestjs/common';
-import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
+import { Injectable, Logger } from '@nestjs/common';
 import { keys } from 'lodash/fp';
-import { DataSource } from 'typeorm';
 
-import { HTTP_API_CLIENT } from 'src/common/providers/http-api-client.provider';
-import { DOMAINS_CONFIG } from './constants/domains.constants';
-import { Domain, DomainAPIClient, FeedItem } from './models/domains.types';
 import { ConfigService } from '@nestjs/config';
-import { ConfigSchemaType } from 'src/common/validators/config.validator';
-import { limitConcurrentRequests } from 'src/common/utils/limit-concurrent-requests.utils';
-import { AggregateDomainImportService } from './aggregate-abstract-domain.import.service';
 import env from 'src/common/utils/env.helper';
+import { limitConcurrentRequests } from 'src/common/utils/limit-concurrent-requests.utils';
+import { ConfigSchemaType } from 'src/common/validators/config.validator';
+import { DOMAINS_CONFIG } from './constants/domains.constants';
+import { Domain } from './models/domains.types';
+import { DataFetcherService } from './domain-services/data-fetcher.service';
+import { DomainServiceFactory } from './domain-services/domain-service.factory';
 
+@Injectable()
 export class AggregateDomainsImportService {
   private readonly limitRequests = env.int(
     'EUROGAMER_LIMIT_CONCURRENT_DOMAINS_REQUESTS',
   );
-  private readonly logger = new Logger(AggregateDomainsImportService.name);
 
   constructor(
-    @Inject(HTTP_API_CLIENT)
-    private readonly apiClient: DomainAPIClient<FeedItem>,
-    private readonly dataSource: DataSource,
+    private readonly dataFetcherService: DataFetcherService,
+    private readonly domainServiceFactory: DomainServiceFactory,
     private readonly configService: ConfigService<ConfigSchemaType>,
+    private readonly logger: Logger,
   ) {}
 
   public async import() {
@@ -50,47 +48,14 @@ export class AggregateDomainsImportService {
   }
 
   private async importByDomain(domain: Domain) {
-    const serviceDomain = this.factoryDomainService(domain);
-
-    const items = await this.getItemsByDomain(domain);
+    const serviceDomain = this.domainServiceFactory.createService(this, domain);
+    const items = await this.dataFetcherService.fetchItemsByDomain(domain);
 
     serviceDomain.importData(items);
   }
 
-  private getRepository(target: EntityClassOrSchema) {
-    return this.dataSource.getRepository(target);
-  }
-
-  private async getItemsByDomain(domain: Domain) {
-    try {
-      const apiClient = this.apiClient[domain];
-      const { rss } = await apiClient.getAll();
-
-      return rss.channel.item;
-    } catch (error) {
-      this.logger.error(`Error getting items from ${domain}`, error);
-      Promise.reject(error);
-    }
-  }
-
-  private factoryDomainService(domain: Domain) {
-    const { entity, service } = DOMAINS_CONFIG[domain];
-
-    const repositoryDomain = this.getRepository(entity);
-    const serviceDomain = new service(this, repositoryDomain);
-    if (!(serviceDomain instanceof AggregateDomainImportService)) {
-      throw new Error(
-        `Service ${
-          (serviceDomain as NonNullable<unknown>).constructor.name
-        } must extend AggregateDomainImportService`,
-      );
-    }
-
-    return serviceDomain;
-  }
-
   public get getApiClient() {
-    return this.apiClient;
+    return this.dataFetcherService.getApiClient;
   }
 
   public get getConfigService() {
