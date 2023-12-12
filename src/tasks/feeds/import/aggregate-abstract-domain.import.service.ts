@@ -146,7 +146,7 @@ export abstract class AggregateDomainImportService {
     const publishDate = publishAt ? publishAt : cheerio('.updated_at').text();
 
     return {
-      description,
+      description, // TODO: Use DOMPurify
       publishDate: publishDate.replace(/\n/g, '').trim(),
       thumbnail,
       title,
