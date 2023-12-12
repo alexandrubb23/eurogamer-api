@@ -5,6 +5,10 @@ export class FeedEntry {
   @Index({ unique: true })
   readonly uuid: string;
 
+  @Index()
+  @Column()
+  readonly slug: string;
+
   @Column()
   readonly title: string;
 
@@ -15,10 +19,6 @@ export class FeedEntry {
 
   @Column()
   readonly thumbnail: string;
-
-  @Column()
-  @Index({ unique: true })
-  readonly link: string;
 
   @Column()
   readonly publishDate: string;

@@ -4,18 +4,17 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 import { DataSource, FindManyOptions, Repository } from 'typeorm';
-import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
-import { ConfigService } from '@nestjs/config';
 
-import { ConfigSchemaType } from '../validators/config.validator';
-import { isArray } from 'lodash';
-import { PageDto } from '../pagination/dtos/page.dto';
 import { PageMetaDto } from '../pagination/dtos/page-meta.dto';
+import { PageDto } from '../pagination/dtos/page.dto';
 import { PageOptionsQueryParameters } from '../pagination/queries/page-options.query';
+import { ConfigSchemaType } from '../validators/config.validator';
 
 export interface WhereClauseRequest<T> extends Request {
   whereClause: FindManyOptions<T>;
@@ -42,8 +41,6 @@ export function factoryPaginationInterceptor(entity: EntityClassOrSchema) {
 
       return next.handle().pipe(
         mergeMap(async (data: EntityClassOrSchema[]) => {
-          if (!isArray(data)) return data;
-
           this.#repository = this.dataSource.getRepository(entity);
           const countTotal = await this.#repository.count(request.whereClause);
 

@@ -1,5 +1,5 @@
 import { FindManyOptions, Repository } from 'typeorm';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Video } from '../entities/video.entity';
@@ -24,5 +24,19 @@ export class VideosService {
     };
 
     return this.videosRepository.find(options);
+  }
+
+  async getVideoBySlug(slug: string): Promise<Video> {
+    console.log({ slug });
+    const video = await this.videosRepository.findOne({
+      where: {
+        slug,
+      },
+    });
+
+    if (!video)
+      throw new NotFoundException(`Video with slug ${slug} not found`);
+
+    return video;
   }
 }

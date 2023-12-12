@@ -25,9 +25,9 @@ export abstract class AggregateDomainImportService {
     protected readonly domainRepository: Repository<FeedEntry>,
   ) {}
 
-  public findItemByLink(link: string) {
+  private findItemBySlug(slug: string) {
     const options: FindOneOptions<FeedEntry> = {
-      where: { link },
+      where: { slug },
     };
 
     return this.domainRepository.findOne(options);
@@ -54,11 +54,11 @@ export abstract class AggregateDomainImportService {
   }
 
   private async importItem(item: FeedItem) {
-    const itemPath = this.getItemPath(item);
-    const existingItem = await this.findItemByLink(item.link);
+    const slug = this.getItemSlug(item);
+    const existingItem = await this.findItemBySlug(slug);
 
     try {
-      const htmlPageSource = await this.apiClient.getOne(itemPath);
+      const htmlPageSource = await this.apiClient.getOne(slug);
 
       if (existingItem)
         throw new ConflictException(
@@ -147,20 +147,15 @@ export abstract class AggregateDomainImportService {
 
     return {
       description,
-      link: item.link,
       publishDate: publishDate.replace(/\n/g, '').trim(),
       thumbnail,
       title,
+      slug: this.getItemSlug(item),
     } as FeedEntry;
   }
 
-  private getItemPath(item: FeedItem) {
-    const apiEndpoint = this.configService.get<string>('EUROGAMER_URL');
-    return item.link.replace(apiEndpoint, '');
-  }
-
-  private get configService() {
-    return this.importService.getConfigService;
+  private getItemSlug(item: FeedItem) {
+    return item.link.replace(/https?:\/\/[^\/]+\//, '');
   }
 
   private get apiClient() {
