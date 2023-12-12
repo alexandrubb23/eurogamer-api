@@ -57,18 +57,18 @@ export abstract class AggregateDomainImportService {
     const slug = this.getItemSlug(item);
     const existingItem = await this.findItemBySlug(slug);
 
-    let htmlPageSource: string;
+    let newItem: FeedEntry;
 
     try {
-      htmlPageSource = await this.apiClient.getOne(slug);
+      const htmlPageSource = await this.apiClient.getOne(slug);
+
+      const cheer = cheerio.load(htmlPageSource);
+      newItem = this.parseSourcePageWithCheerio(cheer, item);
 
       if (existingItem)
         throw new ConflictException(
           `${this.domainName} with link: ${item.link} already exists`,
         );
-
-      const cheer = cheerio.load(htmlPageSource);
-      const newItem = this.parseSourcePageWithCheerio(cheer, item);
 
       const createdItem = await this.saveItem(newItem);
 
@@ -77,7 +77,7 @@ export abstract class AggregateDomainImportService {
       const { NOT_FOUND, CONFLICT } = HttpStatus;
       if (error.status === NOT_FOUND) await this.deleteItem(existingItem);
       if (error.status === CONFLICT)
-        await this.updateItem(existingItem, item, htmlPageSource);
+        await this.updateItem(existingItem, newItem);
 
       return Promise.reject(error);
     }
@@ -102,17 +102,10 @@ export abstract class AggregateDomainImportService {
     }
   }
 
-  private async updateItem(
-    existingItem: FeedEntry,
-    newItem: FeedItem,
-    htmlPageSource: string,
-  ) {
-    const cheer = cheerio.load(htmlPageSource);
-    const feedItem = this.parseSourcePageWithCheerio(cheer, newItem);
-
+  private async updateItem(existingItem: FeedEntry, newItem: FeedEntry) {
     if (
-      existingItem.title === feedItem.title &&
-      existingItem.description === feedItem.description
+      existingItem.title === newItem.title &&
+      existingItem.description === newItem.description
     ) {
       this.logger.debug(
         `${this.domainName} already up to date: ${existingItem.uuid}`,
