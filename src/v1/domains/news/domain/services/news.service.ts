@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, Repository } from 'typeorm';
 import { News } from '../entities/new.entity';
@@ -23,5 +23,17 @@ export class NewsService {
     };
 
     return this.newsRepository.find(options);
+  }
+
+  async getNewsBySlug(slug: string): Promise<News> {
+    const news = await this.newsRepository.findOne({
+      where: {
+        slug,
+      },
+    });
+
+    if (!news) throw new NotFoundException(`News with slug ${slug} not found`);
+
+    return news;
   }
 }

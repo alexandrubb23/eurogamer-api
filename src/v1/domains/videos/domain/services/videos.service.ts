@@ -27,7 +27,6 @@ export class VideosService {
   }
 
   async getVideoBySlug(slug: string): Promise<Video> {
-    console.log({ slug });
     const video = await this.videosRepository.findOne({
       where: {
         slug,

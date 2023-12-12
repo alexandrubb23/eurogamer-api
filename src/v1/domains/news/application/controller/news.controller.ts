@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiFoundResponse, ApiTags } from '@nestjs/swagger';
 
 import { API_TAGS } from 'src/common/constants/api-tags.constants';
@@ -24,5 +24,11 @@ export class NewsController {
   @Get()
   getAllNews(@Query() newsQueryParams: NewsQueryParams): Promise<News[]> {
     return this.videosService.getAllNews(newsQueryParams);
+  }
+
+  @ApiFoundResponse({ type: News })
+  @Get(':slug')
+  getVideoBySlug(@Param('slug') slug: string): Promise<News> {
+    return this.videosService.getNewsBySlug(slug);
   }
 }
