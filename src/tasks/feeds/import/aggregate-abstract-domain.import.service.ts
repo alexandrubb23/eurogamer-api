@@ -139,7 +139,7 @@ export abstract class AggregateDomainImportService {
     const description = cheerio('.article_body_content').find('p').text();
     if (!description) throw new NotAcceptableException('Description not found');
 
-    const thumbnail = cheerio('img.headline_image').attr('src') ?? 'none';
+    const thumbnail = cheerio('img.headline_image').attr('src');
 
     const publishAt =
       cheerio('.published_at').text() ?? cheerio('.updated_at').text();
