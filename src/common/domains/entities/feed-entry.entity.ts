@@ -17,7 +17,9 @@ export class FeedEntry {
   })
   readonly description: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   readonly thumbnail: string;
 
   @Column()

@@ -57,8 +57,10 @@ export abstract class AggregateDomainImportService {
     const slug = this.getItemSlug(item);
     const existingItem = await this.findItemBySlug(slug);
 
+    let htmlPageSource: string;
+
     try {
-      const htmlPageSource = await this.apiClient.getOne(slug);
+      htmlPageSource = await this.apiClient.getOne(slug);
 
       if (existingItem)
         throw new ConflictException(
@@ -74,7 +76,8 @@ export abstract class AggregateDomainImportService {
     } catch (error) {
       const { NOT_FOUND, CONFLICT } = HttpStatus;
       if (error.status === NOT_FOUND) await this.deleteItem(existingItem);
-      if (error.status === CONFLICT) await this.updateItem(existingItem, item);
+      if (error.status === CONFLICT)
+        await this.updateItem(existingItem, item, htmlPageSource);
 
       return Promise.reject(error);
     }
@@ -99,10 +102,17 @@ export abstract class AggregateDomainImportService {
     }
   }
 
-  private async updateItem(existingItem: FeedEntry, newItem: FeedItem) {
+  private async updateItem(
+    existingItem: FeedEntry,
+    newItem: FeedItem,
+    htmlPageSource: string,
+  ) {
+    const cheer = cheerio.load(htmlPageSource);
+    const feedItem = this.parseSourcePageWithCheerio(cheer, newItem);
+
     if (
-      existingItem.title === newItem.title &&
-      existingItem.description === newItem.description
+      existingItem.title === feedItem.title &&
+      existingItem.description === feedItem.description
     ) {
       this.logger.debug(
         `${this.domainName} already up to date: ${existingItem.uuid}`,
@@ -136,7 +146,13 @@ export abstract class AggregateDomainImportService {
     const title = cheerio('h1.title').text().replace(/\n/g, '').trim();
     if (!title) throw new NotAcceptableException('Title not found');
 
-    const description = cheerio('.article_body_content').find('p').text();
+    const description = cheerio('.article_body_content')
+      .find('p')
+      .each(function () {
+        cheerio(this).html();
+      })
+      .toString();
+
     if (!description) throw new NotAcceptableException('Description not found');
 
     const thumbnail = cheerio('img.headline_image').attr('src');
