@@ -150,8 +150,7 @@ export abstract class AggregateDomainImportService {
 
     const thumbnail = cheerio('img.headline_image').attr('src');
 
-    const publishAt =
-      cheerio('.published_at').text() ?? cheerio('.updated_at').text();
+    const publishAt = cheerio('.published_at').text();
     const publishDate = publishAt ? publishAt : cheerio('.updated_at').text();
 
     return {
