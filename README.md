@@ -75,7 +75,7 @@ Improve error handling by utilizing NestJS's built-in exception handling. This m
 
 ### Current Implementation:
 
-```
+```ts
 async getNewsBySlug(slug: string): Promise<News> {
   const news = await this.newsRepository.findOne({
     where: {
@@ -90,7 +90,7 @@ async getNewsBySlug(slug: string): Promise<News> {
 
 ### Proposed Improvement
 
-```
+```ts
   async getNewsBySlug(slug: string): Promise<News> {
     return this.newsRepository.findOneOrFail({
       where: {
@@ -108,7 +108,7 @@ Develop a process to scrape each item's description, extract video IDs, sanitize
 
 ### Proposed Data Structure:
 
-```
+```json
 {
   "uuid": "77dc65a2-b2c5-4608-abc6-fc245c887d7d",
   "slug": "this-new-mod-lets-you-play-cyberpunk-2077-in-vr",
@@ -117,10 +117,7 @@ Develop a process to scrape each item's description, extract video IDs, sanitize
   "thumbnail": "https://assetsio.reedpopcdn.com/-1645789221489.jpg?width=690&quality=75&format=jpg&auto=webp",
   "publishDate": "Updated on 27 Feb 2022",
   "gallery": {
-    "youtube": [
-      "eV2O_3er-mo",
-      "eV21_3er-mo"
-    ],
+    "youtube": ["eV2O_3er-mo", "eV21_3er-mo"],
     "freeTube": ["a", "b", "c"]
   }
 }
