@@ -1,18 +1,13 @@
-import * as cheerio from 'cheerio';
+import { ConflictException, HttpStatus, Logger } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { FindOneOptions, Repository } from 'typeorm';
 
-import {
-  ConflictException,
-  HttpStatus,
-  Logger,
-  NotAcceptableException,
-} from '@nestjs/common';
 import { FeedEntry } from 'src/common/domains/entities/feed-entry.entity';
 import env from 'src/common/utils/env.helper';
 import { limitConcurrentRequests } from 'src/common/utils/limit-concurrent-requests.utils';
 import { AggregateDomainsImportService } from './aggregate-domains-import.service';
 import { Domain, FeedItem } from './models/domains.types';
+import { getSlugFromUrl } from 'src/common/utils/slug.utils';
 
 // TODO: Make generic
 export abstract class AggregateDomainImportService {
@@ -54,16 +49,14 @@ export abstract class AggregateDomainImportService {
   }
 
   private async importItem(item: FeedItem) {
-    const slug = this.getItemSlug(item);
+    const slug = getSlugFromUrl(item.link);
     const existingItem = await this.findItemBySlug(slug);
 
     let newItem: FeedEntry;
 
     try {
-      const htmlPageSource = await this.apiClient.getOne(slug);
-
-      const cheer = cheerio.load(htmlPageSource);
-      newItem = this.parseSourcePageWithCheerio(cheer, item);
+      const html = await this.apiClient.getOne(slug);
+      newItem = this.importService.getFeedEntryParserService.parse(html);
 
       if (existingItem)
         throw new ConflictException(
@@ -127,43 +120,8 @@ export abstract class AggregateDomainImportService {
         description,
       });
     } catch (error) {
-      // this.logger.error(`Error updating video: ${uuid}`, error);
       return Promise.reject(error);
     }
-  }
-
-  private parseSourcePageWithCheerio(
-    cheerio: cheerio.CheerioAPI,
-    item: FeedItem,
-  ): FeedEntry {
-    const title = cheerio('h1.title').text().replace(/\n/g, '').trim();
-    if (!title) throw new NotAcceptableException('Title not found');
-
-    const description = cheerio('.article_body_content')
-      .find('p')
-      .each(function () {
-        cheerio(this).html();
-      })
-      .toString();
-
-    if (!description) throw new NotAcceptableException('Description not found');
-
-    const thumbnail = cheerio('img.headline_image').attr('src');
-
-    const publishAt = cheerio('.published_at').text();
-    const publishDate = publishAt ? publishAt : cheerio('.updated_at').text();
-
-    return {
-      description, // TODO: Use DOMPurify
-      publishDate: publishDate.replace(/\n/g, '').trim(),
-      thumbnail,
-      title,
-      slug: this.getItemSlug(item),
-    } as FeedEntry;
-  }
-
-  private getItemSlug(item: FeedItem) {
-    return item.link.replace(/https?:\/\/[^\/]+\//, '');
   }
 
   private get apiClient() {

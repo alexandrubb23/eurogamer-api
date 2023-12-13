@@ -10,6 +10,7 @@ import { HttpAPIClientProvider } from 'src/common/providers/http-api-client.prov
 import { News } from 'src/v1/domains/news/domain/entities/new.entity';
 import { Video } from 'src/v1/domains/videos/domain/entities/video.entity';
 import env from 'src/common/utils/env.helper';
+import FeedEntryParserService from './import/domain-services/feed-parser.service';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import env from 'src/common/utils/env.helper';
     AggregateImportTasksService,
     DataFetcherService,
     DomainServiceFactory,
+    FeedEntryParserService,
     HttpAPIClientProvider,
     Logger,
   ],

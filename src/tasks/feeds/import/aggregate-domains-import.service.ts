@@ -9,6 +9,7 @@ import { DOMAINS_CONFIG } from './constants/domains.constants';
 import { Domain } from './models/domains.types';
 import { DataFetcherService } from './domain-services/data-fetcher.service';
 import { DomainServiceFactory } from './domain-services/domain-service.factory';
+import FeedEntryParserService from './domain-services/feed-parser.service';
 
 @Injectable()
 export class AggregateDomainsImportService {
@@ -21,6 +22,7 @@ export class AggregateDomainsImportService {
     private readonly domainServiceFactory: DomainServiceFactory,
     private readonly configService: ConfigService<ConfigSchemaType>,
     private readonly logger: Logger,
+    private readonly feedEntryParserService: FeedEntryParserService,
   ) {}
 
   public async import() {
@@ -60,5 +62,9 @@ export class AggregateDomainsImportService {
 
   public get getConfigService() {
     return this.configService;
+  }
+
+  public get getFeedEntryParserService() {
+    return this.feedEntryParserService;
   }
 }
