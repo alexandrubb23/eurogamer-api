@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 
 function addCors(app: INestApplication) {
-  const origin = ['*'];
+  const origin = ['http://localhost:*'];
 
   const methods = ['GET'];
 
