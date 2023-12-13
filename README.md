@@ -41,7 +41,7 @@ git clone https://github.com/alexandrubb23/eurogamer-api.git
 2. Navigate to the project directory:
 
 ```bash
-
+cd eurogamer-api
 ```
 
 3. Run the startup script
