@@ -11,7 +11,7 @@ This project is a backend service designed to scrape news and video feeds from E
   - Title
   - Description
   - Thumbnail
-  - Link
+  - Slug
   - Publish Date
 - Creates local backups of feed content at each run. (TODO: To be implemented)
 - Logs exceptions for debugging and monitoring.
@@ -41,7 +41,7 @@ git clone https://github.com/alexandrubb23/eurogamer-api.git
 2. Navigate to the project directory:
 
 ```bash
-cd eurogamer-api
+
 ```
 
 3. Run the startup script
